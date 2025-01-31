@@ -10,7 +10,6 @@ CATEGORIES = {
 }
 
 def categorize(description)
-  puts description
   description = description.downcase
 
   # If the description matches any of the category mapping keywords return that category, otherwise return Uncategorized.
@@ -31,10 +30,17 @@ def analyze_statement(file)
     category = categorize(description)
     puts row['date']
 
-    transactions << {date: date, description: description, amount: amount}
-
-    # Call a method to output a report to the console.
+    transactions << {date:, description:, amount:, category:}
   end
+
+  summary = transactions.group_by { |transaction| transaction[:category]}
+                        .transform_values { |items| items.sum { |t| t[:amount]}  }
+  display_report(summary)
+end
+
+def display_report(summary)
+  puts "=== Expense Report ==="
+  summary.each { |category, total| puts "#{category}: $#{total.round(2)}" }
 end
 
 analyze_statement('statement.csv')
